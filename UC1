@@ -1,0 +1,49 @@
+public class QuantityMeasurementApp {
+
+    // Inner class
+    static class Feet {
+
+        // Encapsulation + immutability
+        private final double value;
+
+        // Constructor
+        public Feet(double value) {
+            this.value = value;
+        }
+
+        // Override equals()
+        @Override
+        public boolean equals(Object obj) {
+
+            // 1. Same reference check
+            if (this == obj) {
+                return true;
+            }
+
+            // 2. Null check
+            if (obj == null) {
+                return false;
+            }
+
+            // 3. Type check
+            if (this.getClass() != obj.getClass()) {
+                return false;
+            }
+
+            // 4. Cast safely
+            Feet other = (Feet) obj;
+
+            // 5. Compare double values properly
+            return Double.compare(this.value, other.value) == 0;
+        }
+    }
+
+    // Main method
+    public static void main(String[] args) {
+
+        Feet f1 = new Feet(1.0);
+        Feet f2 = new Feet(1.0);
+
+        System.out.println("Are equal? " + f1.equals(f2));
+    }
+}
