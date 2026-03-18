@@ -1,0 +1,110 @@
+public class QuantityMeasurementApp {
+
+    enum LengthUnit {
+        FEET(1.0),
+        INCH(1.0 / 12.0),
+        YARD(3.0),
+        CENTIMETER(0.393701 / 12.0);
+
+        private final double factor;
+
+        LengthUnit(double factor) {
+            this.factor = factor;
+        }
+
+        public double toBase(double value) {
+            return value * factor;
+        }
+
+        public double fromBase(double baseValue) {
+            return baseValue / factor;
+        }
+    }
+
+    static class Quantity {
+
+        private final double value;
+        private final LengthUnit unit;
+
+        public Quantity(double value, LengthUnit unit) {
+            if (unit == null || !Double.isFinite(value)) {
+                throw new IllegalArgumentException("Invalid input");
+            }
+            this.value = value;
+            this.unit = unit;
+        }
+
+        private double toBase() {
+            return unit.toBase(value);
+        }
+
+        public Quantity convertTo(LengthUnit targetUnit) {
+            if (targetUnit == null) {
+                throw new IllegalArgumentException("Invalid target unit");
+            }
+            double base = this.toBase();
+            double converted = targetUnit.fromBase(base);
+            return new Quantity(converted, targetUnit);
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) return true;
+            if (obj == null) return false;
+            if (this.getClass() != obj.getClass()) return false;
+
+            Quantity other = (Quantity) obj;
+
+            return Double.compare(this.toBase(), other.toBase()) == 0;
+        }
+
+        @Override
+        public String toString() {
+            return value + " " + unit;
+        }
+    }
+
+    public static double convert(double value, LengthUnit source, LengthUnit target) {
+        if (source == null || target == null || !Double.isFinite(value)) {
+            throw new IllegalArgumentException("Invalid input");
+        }
+        double base = source.toBase(value);
+        return target.fromBase(base);
+    }
+
+    public static void demonstrateLengthConversion(double value, LengthUnit from, LengthUnit to) {
+        double result = convert(value, from, to);
+        System.out.println(result);
+    }
+
+    public static void demonstrateLengthConversion(Quantity q, LengthUnit to) {
+        Quantity result = q.convertTo(to);
+        System.out.println(result);
+    }
+
+    public static void demonstrateLengthEquality(Quantity q1, Quantity q2) {
+        System.out.println(q1.equals(q2));
+    }
+
+    public static void demonstrateLengthComparison(double v1, LengthUnit u1, double v2, LengthUnit u2) {
+        Quantity q1 = new Quantity(v1, u1);
+        Quantity q2 = new Quantity(v2, u2);
+        demonstrateLengthEquality(q1, q2);
+    }
+
+    public static void main(String[] args) {
+
+        System.out.println(convert(1.0, LengthUnit.FEET, LengthUnit.INCH));
+        System.out.println(convert(3.0, LengthUnit.YARD, LengthUnit.FEET));
+        System.out.println(convert(36.0, LengthUnit.INCH, LengthUnit.YARD));
+        System.out.println(convert(1.0, LengthUnit.CENTIMETER, LengthUnit.INCH));
+        System.out.println(convert(0.0, LengthUnit.FEET, LengthUnit.INCH));
+
+        demonstrateLengthConversion(3.0, LengthUnit.FEET, LengthUnit.INCH);
+
+        Quantity q = new Quantity(1.0, LengthUnit.YARD);
+        demonstrateLengthConversion(q, LengthUnit.INCH);
+
+        demonstrateLengthComparison(1.0, LengthUnit.FEET, 12.0, LengthUnit.INCH);
+    }
+}
